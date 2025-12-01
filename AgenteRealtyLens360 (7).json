@@ -1,0 +1,897 @@
+{
+  "name": "AgenteRealtyLens360",
+  "nodes": [
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get_package_info",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appCMklz99BLqUofO",
+          "mode": "list",
+          "cachedResultName": "RealtyLens360",
+          "cachedResultUrl": "https://airtable.com/appCMklz99BLqUofO"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblnVj2Mxx6YfPZdA",
+          "mode": "list",
+          "cachedResultName": "Opciones",
+          "cachedResultUrl": "https://airtable.com/appCMklz99BLqUofO/tblnVj2Mxx6YfPZdA"
+        },
+        "filterByFormula": "=AND(\n  {NombrePaquete} = '{{ $json.NombrePaquete || \"\" }}',\n  {NombreOpcion} = '{{ $json.NombreOpcion || \"\" }}'\n)",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        416
+      ],
+      "id": "0fdad185-c1cb-4f99-9518-a0588b2bd9f0",
+      "name": "List Records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "JtFnSb2Erru2ZwaS",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6b586a45-456a-4f98-86dd-6ccb7c0e9645",
+              "leftValue": "={{ \n  !!$json.NombrePaquete &&\n  !!$json.NombreOpcion &&\n  !!$json.ClienteNombre &&\n  !!$json.Telefono &&\n  !!$json.Correo &&\n  !!$json.Direccion &&\n  !!$json.Zona &&\n  !!$json.Fecha &&\n  !!$json.Hora &&\n  !!$json.id_paquete &&\n  !!$json.id_opcion\n}}\n",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        208
+      ],
+      "id": "b30bd3a2-b4b8-4211-95c9-24ad35bc1fd0",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"text-embedding-3-small\",\n  \"input\": \"{{$json.q}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1472,
+        352
+      ],
+      "id": "ef1ff7de-86c5-47a8-a572-8366f779d721",
+      "name": "HTTP Request",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1744,
+        352
+      ],
+      "id": "53667b95-cfb7-4cc0-9069-435733f55005",
+      "name": "Pinecone Vector Store1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1712,
+        576
+      ],
+      "id": "20d15acb-4d90-4a93-941d-973ab4cb35bc",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "nDz0D9wFSNGPafe7",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1888,
+        576
+      ],
+      "id": "d227cfb7-d998-4387-a3cd-e233b30cf179",
+      "name": "Default Data Loader",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tomar los datos del input actual\nconst datos = $json.output || {};\n\n// Calcular zona a partir de la dirección si aún no viene\nconst direccion = datos.Direccion || \"\";\nconst zonaMatch = direccion.match(/Palmetto Bay|Kendall|Homestead|Coral Gables/i);\nconst zona = datos.Zona || (zonaMatch ? zonaMatch[0] : \"\");\n\nreturn {\n  json: {\n    NombrePaquete: datos.NombrePaquete || \"\",\n    NombreOpcion: datos.NombreOpcion || \"\",\n    ClienteNombre: datos.ClienteNombre || \"\",\n    Correo: datos.Correo || \"\",\n    Telefono: datos.Telefono || \"\",\n    Direccion: direccion,\n    Zona: zona,          // ← CORREGIDO\n    Fecha: datos.Fecha || \"\",\n    Hora: datos.Hora || \"\",\n    id_paquete: datos.id_paquete || \"\",\n    id_opcion: datos.id_opcion || \"\",\n    accion: \"sendMessage\",\n    response: datos.response || \"\"\n  }\n};\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        352
+      ],
+      "id": "def955ba-aa73-4fcf-93fa-6630d3202654",
+      "name": "Formatear respuesta para Chat"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code node (Run once for all items)\n\n// 1) Entrada segura\nconst input = (items?.[0]?.json) ?? {};\nconst sessionId = String(input.sessionId ?? '');\nconst chatInput = String((input.chatInput ?? input.input ?? '')).trim();\nconst lang = input.lang ?? 'es';\n\n// 2) Horarios visibles por defecto (tu patrón rápido)\nconst availableTimes = input.availableTimes ?? [\n  '09:00 am',\n  '11:30 am',\n  '01:00 pm',\n  '03:30 pm',\n];\n\n// 3) Salida base para el flujo/agent\nconst out = {\n  sessionId,\n  input: chatInput,\n  lang,\n  availableTimes,\n  timezone: 'America/New_York',  // Florida (Eastern Time)\n  workDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],\n  workHours: { start: '08:00 am', end: '04:00 pm' },\n  action: 'sendMessage',\n};\n\n// 4) Si ya tienes datos de calendario, prepara el payload para el nodo \"Create Event\"\nconst client_name  = input.client_name  ?? '';\nconst client_email = input.client_email ?? '';\n\nif (input.start_time && input.end_time) {\n  out.startLocal = input.start_time; // ej: \"2025-11-21T14:00:00\"\n  out.endLocal   = input.end_time;   // ej: \"2025-11-21T14:30:00\"\n\n  const paquete = input.paquete || 'Paquete';\n  const opcion  = input.opcion ? ` (${input.opcion})` : '';\n\n  out.location = input.direccion || input.zona || '';\n  out.summary = `Realty Lens 360° – ${paquete}${opcion} – ${client_name || 'Cliente'}`;\n  out.description = [\n    client_name || client_email ? `Cliente: ${client_name} ${client_email ? `– ${client_email}` : ''}${input.telefono ? ` – ${input.telefono}` : ''}` : '',\n    `Paquete: ${paquete}${opcion}`,\n    out.location ? `Ubicación: ${out.location}` : '',\n    '',\n    'Checklist: abrir cortinas, encender luces, ordenar áreas clave.',\n    'Reprogramaciones: avisar 24 h antes.'\n  ].filter(Boolean).join('\\n');\n\n  out.attendees = [\n    ...(client_email ? [{ email: client_email, displayName: client_name }] : []),\n    { email: 'massiscorpion981@gmail.com', displayName: 'Realty Lens 360°', organizer: true },\n  ];\n}\n\n// 5) Devolver item para n8n\nreturn [{ json: out }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        208
+      ],
+      "id": "dd6d9507-0275-4457-bed7-26c5f00148de",
+      "name": "Edit"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -656,
+        208
+      ],
+      "id": "33c18ea8-2fa1-42a7-8cac-d6740fa8fe20",
+      "name": "When chat message received",
+      "webhookId": "f3aee6c7-c7a6-4536-b4e6-430db4e00190"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appCMklz99BLqUofO",
+          "mode": "list",
+          "cachedResultName": "RealtyLens360",
+          "cachedResultUrl": "https://airtable.com/appCMklz99BLqUofO"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl8ghzZdkDUeh8c0",
+          "mode": "list",
+          "cachedResultName": "Citas",
+          "cachedResultUrl": "https://airtable.com/appCMklz99BLqUofO/tbl8ghzZdkDUeh8c0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id_cita": "={{ $json.id_cita }}",
+            "ClienteNombre": "={{ $json.ClienteNombre }}",
+            "Telefono": "={{ $json.Telefono }}",
+            "Correo": "={{ $json.Correo }}",
+            "Direccion": "={{ $json.Direccion }}",
+            "Zona": "={{ $json.Zona }}",
+            "Estado": "={{$json.Estado || \"Confirmada\"}}",
+            "id_paquete": "={{ $json.id_paquete }}",
+            "id_opcion": "={{ $json.id_opcion }}",
+            "Hora": "={{ $json.Hora || undefined }}\n",
+            "Fecha": "={{ $json.Fecha ? $json.Fecha : undefined }}"
+          },
+          "matchingColumns": [
+            "id_cita"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "id_cita",
+              "displayName": "id_cita",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ClienteNombre",
+              "displayName": "ClienteNombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Telefono",
+              "displayName": "Telefono",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Correo",
+              "displayName": "Correo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Direccion",
+              "displayName": "Direccion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Hora",
+              "displayName": "Hora",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Zona",
+              "displayName": "Zona",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "id_paquete",
+              "displayName": "id_paquete",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "nombre (from id_paquete)",
+              "displayName": "nombre (from id_paquete)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "id_opcion",
+              "displayName": "id_opcion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "nombre_opcion (from id_opcion)",
+              "displayName": "nombre_opcion (from id_opcion)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Confirmada",
+                  "value": "Confirmada"
+                },
+                {
+                  "name": "Reprogramada",
+                  "value": "Reprogramada"
+                },
+                {
+                  "name": "Cancelada",
+                  "value": "Cancelada"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true,
+          "updateAllMatches": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        48
+      ],
+      "id": "b6699e6b-68c6-4c7a-afbb-2e15cc9cb2a6",
+      "name": "FromCitas",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "JtFnSb2Erru2ZwaS",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Tomar el objeto (a veces viene en output, a veces en la raíz)\nconst o = $json.output && Object.keys($json.output).length ? $json.output : $json;\n\n// --------- VALIDACIÓN DE FECHA (sin luxon) ---------\nlet fecha = o.Fecha || \"\";\n\nif (fecha) {\n  // Soporta \"2023-12-15\" o \"2023-12-15T...\"\n  const parsed = new Date(fecha);\n\n  // Hoy a las 00:00\n  const today = new Date();\n  today.setHours(0, 0, 0, 0);\n\n  // Si la fecha es inválida o es del pasado, la vaciamos\n  if (isNaN(parsed.getTime()) || parsed < today) {\n    fecha = \"\";\n  } else {\n    // Normalizamos a \"YYYY-MM-DD\"\n    const yyyy = parsed.getFullYear();\n    const mm = String(parsed.getMonth() + 1).padStart(2, \"0\");\n    const dd = String(parsed.getDate()).padStart(2, \"0\");\n    fecha = `${yyyy}-${mm}-${dd}`;\n  }\n}\n\n// --------- ZONA desde Dirección si no viene explícita ---------\nconst direccion = o.Direccion || \"\";\nconst zonaMatch = direccion.match(/Palmetto Bay|Kendall|Homestead|Coral Gables/i);\nconst zona = o.Zona || (zonaMatch ? zonaMatch[0] : \"\");\n\n// id_cita (si no viene) – string para Airtable\nconst id_cita = o.id_cita || Date.now().toString();\n\n// Estado por defecto\nconst estado = o.Estado || \"Pendiente\";\n\n// --------- SALIDA UNIFICADA ---------\nreturn {\n  json: {\n    id_cita,\n    ClienteNombre: o.ClienteNombre || \"\",\n    Telefono:      o.Telefono      || \"\",\n    Correo:        o.Correo        || \"\",\n    Direccion:     direccion,\n    Fecha:         fecha,          // 👈 ya filtrada (no pasado)\n    Hora:          o.Hora          || \"\",\n    Zona:          zona,\n    id_paquete:    o.id_paquete    || \"\",\n    id_opcion:     o.id_opcion     || \"\",\n    Estado:        estado,\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        48
+      ],
+      "id": "c75a44ff-dce8-4bc1-9b40-b0006f10a581",
+      "name": "Function PrepararCita"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "massiscorpion981@gmail.com",
+          "mode": "id"
+        },
+        "start": "={{ $json.startRFC3339.replace('Z','') }}",
+        "end": "={{ $json.endRFC3339.replace('Z','') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        2432,
+        48
+      ],
+      "id": "141747dc-6d7e-47f2-b059-e1a4b996d9b2",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "9IsoGGO3zI8H4RBB",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 🔹 Función auxiliar: convierte \"10:00am\" → { hour: 10, minute: 0 } en 24h\nfunction parseHourTo24(horaTexto) {\n  if (!horaTexto) return { hour: 9, minute: 0 }; // fallback 09:00\n\n  let h = horaTexto.trim().toLowerCase();\n  h = h.replace(/\\s+/g, \"\");      // \"10:00 am\" -> \"10:00am\"\n\n  const isPM = h.includes(\"pm\");\n  const isAM = h.includes(\"am\");\n  h = h.replace(/am|pm/g, \"\");\n\n  let [hourStr, minStr] = h.split(\":\");\n  let hour = parseInt(hourStr || \"0\", 10);\n  let minute = parseInt(minStr || \"0\", 10);\n\n  if (isPM && hour < 12) hour += 12;\n  if (isAM && hour === 12) hour = 0;\n\n  if (!Number.isFinite(hour) || !Number.isFinite(minute)) {\n    hour = 9;\n    minute = 0;\n  }\n\n  return { hour, minute };\n}\n\n// 🔹 Procesar TODOS los items que vienen del nodo FromCitas\nconst salida = items.map(item => {\n  const src = item.json;\n  const data = src.fields || src; // si viene de Airtable usamos fields\n\n  const fecha = data.Fecha || \"\";               // \"2025-12-14\"\n  const horaTexto = data.Hora || src.Hora || \"\"; // \"10:00am\"\n\n  // Si no hay fecha, NO creamos evento y dejamos pasar el item igual\n  if (!fecha) {\n    return item;\n  }\n\n  // --- Construir start/end en RFC3339 ---\n  const { hour, minute } = parseHourTo24(horaTexto);\n\n  const [year, month, day] = fecha.split(\"-\").map(n => parseInt(n, 10));\n  const startDate = new Date(year, month - 1, day, hour, minute, 0);\n  const endDate   = new Date(startDate.getTime() + 90 * 60 * 1000); // 90 min\n\n  const startRFC3339 = startDate.toISOString();\n  const endRFC3339   = endDate.toISOString();\n\n  // --- Textos del evento ---\n  const paquete   = data.NombrePaquete || src.NombrePaquete || \"\";\n  const opcion    = data.NombreOpcion  || src.NombreOpcion  || \"\";\n  const cliente   = data.ClienteNombre || src.ClienteNombre || \"\";\n  const correo    = data.Correo        || src.Correo        || \"\";\n  const tel       = data.Telefono      || src.Telefono      || \"\";\n  const zona      = data.Zona          || src.Zona          || \"\";\n  const direccion = data.Direccion     || src.Direccion     || \"\";\n\n  const summary = `Realty Lens 360° – ${paquete} (${opcion}) – ${cliente}`;\n  const location = zona\n    ? `${zona}${direccion ? \" - \" + direccion : \"\"}`\n    : (direccion || \"\");\n\n  const description =\n    `Cliente: ${cliente} – ${correo} – ${tel}\\n` +\n    `Paquete: ${paquete} (${opcion})\\n` +\n    `Ubicación: ${location}\\n\\n` +\n    `Checklist: abrir cortinas, encender luces.\\n` +\n    `Reprogramaciones: avisar 24 h antes.`;\n\n  // Devolvemos el item que el nodo Google Calendar necesita\n  return {\n    json: {\n      ...src,               // conservas id, fields, etc.\n      startRFC3339,\n      endRFC3339,\n      timezone: \"America/New_York\",\n      summary,\n      location,\n      description,\n    },\n  };\n});\n\n// 🔹 SIEMPRE devolver un array de items\nreturn salida;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        48
+      ],
+      "id": "2a165669-3725-45d1-96cc-13130e48ae93",
+      "name": "PrepararEventoCalendar"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appCMklz99BLqUofO",
+          "mode": "list",
+          "cachedResultName": "RealtyLens360",
+          "cachedResultUrl": "https://airtable.com/appCMklz99BLqUofO"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl8ghzZdkDUeh8c0",
+          "mode": "list",
+          "cachedResultName": "Citas",
+          "cachedResultUrl": "https://airtable.com/appCMklz99BLqUofO/tbl8ghzZdkDUeh8c0"
+        },
+        "filterByFormula": "==AND(\n  {Fecha} = '{{$json.Fecha}}',\n  {Hora}  = '{{$json.Hora}}',\n  {Estado} != 'Cancelada'\n)",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1488,
+        224
+      ],
+      "id": "c3cb4bab-715e-4b49-bf9b-b5c1ade9c248",
+      "name": "CheckCitaDuplicada",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "JtFnSb2Erru2ZwaS",
+          "name": "Airtable Personal Access Token account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fde63c3d-1caf-430d-aa1f-a5e601e89c01",
+              "leftValue": "={{ $json.length }}\n",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1648,
+        256
+      ],
+      "id": "e6bf5dcc-da19-491e-9209-6819ea5eb3d6",
+      "name": "If1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tomamos el JSON que salió del AI Agent (el que tiene output con todos los campos)\nconst origen = $items('AI Agent', 0).json.output ?? $items('AI Agent', 0).json;\n\n// Desestructuramos lo que nos interesa para armar el mensaje\nconst {\n  ClienteNombre,\n  NombrePaquete,\n  NombreOpcion,\n  Fecha,\n  Hora,\n} = origen;\n\n// Armamos el nuevo objeto manteniendo TODOS los campos\nconst salida = {\n  ...origen,\n  accion: 'sendMessage',\n  response: `Lo siento${ClienteNombre ? `, ${ClienteNombre}` : ''}. \nLa franja de las ${Hora || 'esa hora'} del ${Fecha || 'esa fecha'} \npara el paquete ${NombrePaquete || ''} ${NombreOpcion || ''} ya está ocupada. \nPor favor elige otro horario disponible (09:30 am, 11:30 am, 01:00 pm o 03:30 pm).`,\n};\n\n// Devolvemos un solo item para el chat\nreturn [salida];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        208
+      ],
+      "id": "599009f5-d289-448a-b44b-bf5219d3b946",
+      "name": "Fomatear Respuesta"
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $input.item.json;\nconst datos = source || {};\n\nconst nombrePaquete = datos.NombrePaquete || \"\";\nconst nombreOpcion  = datos.NombreOpcion || \"\";\nconst nombreCliente = datos.ClienteNombre || \"\";\nconst correo        = datos.Correo || \"\";\nconst telefono      = datos.Telefono || \"\";\nconst direccion     = datos.Direccion || \"\";\nconst zona          = datos.Zona || \"\";\nconst fecha         = datos.Fecha || \"\";\nconst hora          = datos.Hora || \"\";\n\nconst lugarTexto = zona || direccion || \"la ubicación acordada\";\n\nreturn {\n  json: {\n    NombrePaquete: nombrePaquete,\n    NombreOpcion: nombreOpcion,\n    ClienteNombre: nombreCliente,\n    Correo: correo,\n    Telefono: telefono,\n    Direccion: direccion,\n    Zona: zona,\n    Fecha: fecha,\n    Hora: hora,\n    id_paquete: datos.id_paquete || \"\",\n    id_opcion: datos.id_opcion || \"\",\n    accion: \"sendMessage\",\n    response: `Perfecto, ${nombreCliente}. Su cita para ${nombrePaquete} (${nombreOpcion}) en ${lugarTexto} el ${fecha} a la(s) ${hora} ha sido registrada. Le envié una invitación de calendario y recibirá recordatorios. ¡Gracias por su confianza!`\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        48
+      ],
+      "id": "61e98ab0-014c-4e52-9f14-a4bbcf44b939",
+      "name": "Formatear Respuesta Final"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Horarios válidos en tu sistema\nconst availableTimes = [\n  \"09:30 am\",\n  \"11:30 am\",\n  \"01:00 pm\",\n  \"03:30 pm\",\n];\n\n// ---- Helpers ----\nfunction parseToMinutes(str) {\n  if (!str) return null;\n\n  str = String(str)\n    .toLowerCase()\n    .replace(/\\s+/g, \"\");       // \"1:00 pm\" -> \"1:00pm\"\n\n  const m = str.match(/(\\d{1,2})(?::?(\\d{2}))?(am|pm)?/);\n  if (!m) return null;\n\n  let h = parseInt(m[1], 10);\n  let min = m[2] ? parseInt(m[2], 10) : 0;\n  let ampm = m[3];\n\n  if (!ampm) {\n    if (h === 0) {\n      ampm = \"am\"; h = 12;\n    } else if (h === 12) {\n      ampm = \"pm\";\n    } else if (h > 12) {\n      ampm = \"pm\"; h = h - 12;\n    } else {\n      ampm = \"am\";\n    }\n  }\n\n  let h24 = h;\n  if (ampm === \"pm\" && h !== 12) h24 = h + 12;\n  if (ampm === \"am\" && h === 12) h24 = 0;\n\n  return h24 * 60 + min;\n}\n\nfunction minutesToCanonical(minutes) {\n  if (minutes == null) return \"\";\n\n  let h24 = Math.floor(minutes / 60);\n  const min = minutes % 60;\n\n  const ampm = h24 >= 12 ? \"pm\" : \"am\";\n  let h12 = h24 % 12;\n  if (h12 === 0) h12 = 12;\n\n  const hh = String(h12).padStart(2, \"0\");\n  const mm = String(min).padStart(2, \"0\");\n\n  return `${hh}:${mm} ${ampm}`;\n}\n\n// ---- Lógica principal ----\nconst root = $json;\nconst o = root.output || {};\n\nconst horaOriginal = o.Hora || \"\";\nif (!horaOriginal) {\n  return [{ json: root }];\n}\n\nconst minutes = parseToMinutes(horaOriginal);\nconst canonical = minutesToCanonical(minutes);\n\nlet horaFinal = \"\";\nif (availableTimes.includes(canonical)) {\n  horaFinal = canonical;\n} else {\n  // Hora fuera de slots → se limpia para que el Agent vuelva a pedir\n  horaFinal = \"\";\n}\n\nconst newOutput = {\n  ...o,\n  Hora: horaFinal,\n  HoraOriginalCliente: horaOriginal,\n};\n\nreturn [\n  {\n    json: {\n      ...root,\n      output: newOutput,\n    },\n  },\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        208
+      ],
+      "id": "d5f17cb3-c392-4e9b-9943-7416a74ce295",
+      "name": "NormalizarHora"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -192,
+        416
+      ],
+      "id": "9f6b1aea-442b-4fea-960a-1b392c00908e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "nDz0D9wFSNGPafe7",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1) Tomamos la salida cruda del agente como texto\nlet raw = items[0].json.output ?? '';\nraw = String(raw).trim();\n\n// 2) Buscamos el primer '{'\nconst firstOpen = raw.indexOf('{');\nif (firstOpen === -1) {\n  throw new Error('No se encontró ningún \"{\" en la respuesta del agente.');\n}\n\n// Nos quedamos desde el primer '{'\nlet rest = raw.slice(firstOpen);\n\n// 3) Buscamos el primer '}' después de ese '{'\nconst firstClose = rest.indexOf('}');\nif (firstClose === -1) {\n  throw new Error('No se encontró ningún \"}\" en la respuesta del agente.');\n}\n\n// 4) Tomamos solo desde '{' hasta '}' (primer objeto JSON)\nlet jsonText = rest.slice(0, firstClose + 1);\n\n// 5) Intentamos parsear\nlet parsed;\ntry {\n  parsed = JSON.parse(jsonText);\n} catch (e) {\n  throw new Error('Error al parsear JSON del agente: ' + e.message + '\\nTexto usado: ' + jsonText);\n}\n\n// 6) Devolvemos un único item con ese objeto\nreturn [\n  {\n    json: parsed,\n  },\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        208
+      ],
+      "id": "63759aa7-3df0-4f68-b9f5-91d2ea80b20f",
+      "name": "Parse"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        416
+      ],
+      "id": "5dd2485e-dc8e-4b27-9b24-edaab6706c21",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=MENSAJE DEL CLIENTE:\n{{$json.input}}\n\nRol: Eres el asistente de Realty Lens 360°. Ayudas al cliente a elegir un paquete (Básico / Premium / Comercial) y a reservar una cita sin choques de agenda.\n\nTu objetivo:\n- Guiar al cliente a elegir el paquete y opción correctos.\n- Recoger sus datos (nombre, teléfono, email, zona, dirección, fecha, hora).\n- Ver disponibilidad real, evitar doble reserva y confirmar la cita.\n- Responder SIEMPRE con un único objeto JSON válido usando los campos indicados más abajo.\n\n────────────────────────────────\n1) Saludo y encuadre\n────────────────────────────────\n\nSi el cliente solo saluda o escribe algo general y no hay contexto previo:\n- \"response\": \"¡Hola! 👋 Bienvenido a Realty Lens 360°. ¿Qué paquete deseas conocer: Premium, Comercial o Básico? Si prefieres, dime tu necesidad (opciones 1, 2, 3 o 4) y te guío.\"\n- Mantén el resto de campos del JSON igual.\n\n────────────────────────────────\n2) Información de paquete (USAR HERRAMIENTA get_package_info)\n────────────────────────────────\n\nMUY IMPORTANTE:\nSi el usuario escribe algo como:\n- \"comercial opcion 1\"\n- \"comercial 1\"\n- \"premium opcion 3\"\n- \"básico 2\"\n- \"detalle comercial opcion 1\"\n- \"qué incluye premium 3\"\n- \"quiero ver basico opcion 2\"\n\nDEBES interpretarlo COMO solicitud de información del paquete/opción.\n\n1. Detecta el paquete: \"Basico\", \"Premium\" o \"Comercial\".\n2. Detecta la opción: \"Opcion 1\", \"Opcion 2\", \"Opcion 3\" u \"Opcion 4\".\n3. LLAMA OBLIGATORIAMENTE a la herramienta:\n\n   get_package_info({\n     \"NombrePaquete\": \"<Basico|Premium|Comercial>\",\n     \"NombreOpcion\": \"<Opcion 1|Opcion 2|Opcion 3|Opcion 4>\"\n   })\n\nNUNCA inventes la descripción del paquete. Siempre obtén la descripción desde la herramienta.\n\nSi la herramienta devuelve un registro con:\n- NombrePaquete\n- NombreOpcion\n- Descripcion\n\nentonces en el campo \"response\" responde EXACTAMENTE así:\n\n\"El paquete {NombrePaquete} {NombreOpcion} incluye {descripcion_format}. ¿Deseas que te ayude a reservar?\"\n\ndonde descripcion_format es:\n- el campo Descripcion convertido a minúsculas,\n- sin punto final,\n- reemplazando \"plano \" por \"planos \" si aparece.\n\nSi get_package_info no devuelve nada:\n- \"response\": \"¿Podrías repetir el nombre exacto del paquete y la opción? Ejemplo: Comercial Opcion 1.\"\n- No avances de paso.\n\n────────────────────────────────\n3) Datos del cliente (uno por mensaje)\n────────────────────────────────\n\nOrden: Nombre completo → Teléfono → Correo → Zona → Dirección → Fecha → Hora.\n\n- Pide SOLO un dato por mensaje.\n- Valida:\n  - Nombre debe tener nombre y apellido.\n  - Teléfono: mínimo 10 dígitos.\n  - Correo: debe tener @ y dominio.\n\n────────────────────────────────\n4) Zona y dirección\n────────────────────────────────\n\nZonas válidas: \"Kendall\", \"Palmetto Bay\", \"Homestead\", \"Coral Gables\".\n\n- Si la dirección ya incluye una de esas zonas, úsala como Zona.\n- Si solo hay zona sin dirección: guarda Zona y pide Dirección.\n- Si falta Zona: pídesela.\n\n────────────────────────────────\n5) Disponibilidad y confirmación\n────────────────────────────────\n\nCuando YA tengas:\n- NombrePaquete\n- NombreOpcion\n- Fecha\n- Zona\n- Hora\n\npuedes marcar la acción \"sendMessage\" para que el sistema continúe con la reserva y cree el evento en calendario en otros nodos.\n\nEn ese caso, \"response\" debe ser:\n\n\"Perfecto, {ClienteNombre}. Su cita para {NombrePaquete} ({NombreOpcion}) en {Zona} el {Fecha} a la(s) {Hora} ha sido registrada. Le envié una invitación de calendario y recibirá recordatorios. ¡Gracias por su confianza! 🧡\"\n\n────────────────────────────────\n6) Formato del JSON de salida\n────────────────────────────────\n\nSiempre responde SOLO un objeto JSON con TODOS estos campos:\n\n{\n  \"NombrePaquete\": \"...\",\n  \"NombreOpcion\": \"...\",\n  \"Fecha\": \"...\",\n  \"Hora\": \"...\",\n  \"Zona\": \"...\",\n  \"ClienteNombre\": \"...\",\n  \"Telefono\": \"...\",\n  \"Correo\": \"...\",\n  \"Direccion\": \"...\",\n  \"id_paquete\": \"\",\n  \"id_opcion\": \"\",\n  \"accion\": \"esperar\" | \"sendMessage\",\n  \"response\": \"...\"\n}\n\n- No uses backticks.\n- No añadas texto fuera del JSON.\n- No expliques la herramienta ni la lógica interna.\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -64,
+        208
+      ],
+      "id": "3e6476bf-c67f-4435-a829-77caac50a4c7",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "List Records": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Function PrepararCita",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formatear respuesta para Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear respuesta para Chat": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function PrepararCita": {
+      "main": [
+        [
+          {
+            "node": "FromCitas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FromCitas": {
+      "main": [
+        [
+          {
+            "node": "PrepararEventoCalendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PrepararEventoCalendar": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CheckCitaDuplicada": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Fomatear Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Formatear Respuesta Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NormalizarHora": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse": {
+      "main": [
+        [
+          {
+            "node": "NormalizarHora",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false
+  },
+  "versionId": "ea4538cf-45d1-4403-ad38-900bf48a43a7",
+  "meta": {
+    "instanceId": "dccbfa12546d75de6818ea1eaf9e54c2d38e63c84c2349b6f6efe6cb19a3e087"
+  },
+  "id": "cyqkP0ZirYbJhAGT",
+  "tags": []
+}
