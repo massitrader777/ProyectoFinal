@@ -5,21 +5,22 @@
       "parameters": {
         "updates": [
           "message"
-        ]
+        ],
+        "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.1,
       "position": [
-        -3104,
-        0
+        -3760,
+        -176
       ],
-      "id": "11111111-1111-1111-1111-111111111111",
+      "id": "b102ee83-5e79-4a94-b330-252a21e1d8bf",
       "name": "Telegram Trigger",
       "webhookId": "430db4e0-0190-4536-b4e6-f3aee6c7c7a6",
       "credentials": {
         "telegramApi": {
-          "id": "telegram-account-id",
-          "name": "Telegram Account"
+          "id": "qnm6xhn2yyw5PPr6",
+          "name": "Telegram account"
         }
       }
     },
@@ -51,10 +52,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1456,
-        192
+        -2400,
+        -176
       ],
-      "id": "29d0422b-7d7f-4647-94de-55bd9b3e293e",
+      "id": "ca40e1a2-4d15-4e36-bf95-d5af850590a7",
       "name": "If"
     },
     {
@@ -80,10 +81,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -896,
-        352
+        -1952,
+        80
       ],
-      "id": "9171a4c6-c44a-4d3f-a42e-2193c3ab48c4",
+      "id": "2723d1d5-3a5e-4629-a514-42c1fee9f38b",
       "name": "HTTP Request",
       "disabled": true
     },
@@ -94,15 +95,15 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -720,
-        528
+        -1712,
+        304
       ],
-      "id": "a80e1e89-fea2-43b3-b101-6ab66827ca42",
+      "id": "d45c3e24-23d4-44e3-b9ef-2dcc868629c0",
       "name": "Embeddings OpenAI",
       "credentials": {
         "openAiApi": {
-          "id": "e9kOC2wdC2eXBdqQ",
-          "name": "OpenAi account"
+          "id": "HqqlP7V9zajs3X15",
+          "name": "OpenAI-Senpai"
         }
       },
       "disabled": true
@@ -114,10 +115,10 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        -544,
-        528
+        -1584,
+        304
       ],
-      "id": "e15dca91-674a-45c3-82a6-fda52d1b39f3",
+      "id": "a4bc144d-0c95-4898-a9f4-c4b85949c55c",
       "name": "Default Data Loader",
       "disabled": true
     },
@@ -128,10 +129,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1072,
-        352
+        -2176,
+        80
       ],
-      "id": "60c22588-26c7-4929-b4a8-920f5dfb3897",
+      "id": "59296526-3a81-41db-aa44-242d60d0391d",
       "name": "Formatear respuesta para Chat"
     },
     {
@@ -141,10 +142,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2816,
-        192
+        -3536,
+        -80
       ],
-      "id": "fe25f4a3-54a3-4aa4-9d92-a6541714dce0",
+      "id": "dcb5bb2d-15dd-452d-aae7-2556532628a8",
       "name": "Edit"
     },
     {
@@ -154,10 +155,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -3104,
-        192
+        -3760,
+        16
       ],
-      "id": "7681a251-3288-4422-863d-6796435162e3",
+      "id": "325049fe-3331-4f04-9ca0-c39927ec61f3",
       "name": "When chat message received",
       "webhookId": "f3aee6c7-c7a6-4536-b4e6-430db4e00190"
     },
@@ -367,14 +368,14 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        -320,
-        48
+        -704,
+        -80
       ],
-      "id": "872a0f6a-8f34-481d-a746-43a44950a865",
+      "id": "21b573b9-d75f-4ff0-ac07-7b8efb78b5b8",
       "name": "FromCitas",
       "credentials": {
         "airtableTokenApi": {
-          "id": "FY5BRRFANF1cAZNo",
+          "id": "9dAQu5FCFGIroaM2",
           "name": "Airtable Personal Access Token account"
         }
       }
@@ -386,17 +387,17 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1184,
-        48
+        -2176,
+        -320
       ],
-      "id": "d45e8e4f-070a-4757-9fea-10f44539f431",
+      "id": "d6a6b8ef-d58c-47ce-b0a1-2ddb78b5cb21",
       "name": "Function PrepararCita"
     },
     {
       "parameters": {
         "calendar": {
           "__rl": true,
-          "value": "massiscorpion981@gmail.com",
+          "value": "jonimach94@gmail.com",
           "mode": "id"
         },
         "start": "={{ $json.startRFC3339.replace('Z','') }}",
@@ -406,15 +407,15 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        80,
-        48
+        -256,
+        -80
       ],
-      "id": "9ec9aa1a-d326-40ad-8ee8-3f6063a096aa",
+      "id": "4bec8bcf-83ff-4f7f-bcc8-abe6a66af4b7",
       "name": "Create an event",
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "J2NgWuhZ60qsMxuf",
-          "name": "Google Calendar account"
+          "id": "5P6wRfW5wQRu3geu",
+          "name": "GCalendar-jonimach94"
         }
       }
     },
@@ -425,10 +426,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -128,
-        48
+        -480,
+        -80
       ],
-      "id": "dbeb6120-24e1-4fed-b062-3e501c8f45c7",
+      "id": "18ea4e87-aec7-4171-b4c5-5baccfe09327",
       "name": "PrepararEventoCalendar"
     },
     {
@@ -438,10 +439,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -992,
-        352
+        -1664,
+        -224
       ],
-      "id": "33333333-3333-3333-3333-333333333333",
+      "id": "47ede320-c162-4284-b582-5ef30e2bb20a",
       "name": "CalcularFechas"
     },
     {
@@ -449,27 +450,24 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "massiscorpion981@gmail.com",
-          "mode": "list"
+          "value": "jonimach94@gmail.com",
+          "mode": "id"
         },
-        "options": {
-          "timeMin": "={{ $json.startRFC3339 }}",
-          "timeMax": "={{ $json.endRFC3339 }}"
-        }
+        "options": {}
       },
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -832,
-        352
+        -1376,
+        -224
       ],
-      "id": "44444444-4444-4444-4444-444444444444",
+      "id": "76af471b-ca75-4004-9521-2782dd91ccfb",
       "name": "CheckAvailability",
       "alwaysOutputData": true,
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "J2NgWuhZ60qsMxuf",
-          "name": "Google Calendar account"
+          "id": "5P6wRfW5wQRu3geu",
+          "name": "GCalendar-jonimach94"
         }
       }
     },
@@ -482,15 +480,16 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        512,
-        48
+        416,
+        -80
       ],
-      "id": "55555555-5555-5555-5555-555555555555",
+      "id": "dc835ac3-5798-44d7-9b19-0f8dfb20e92f",
       "name": "Telegram Success",
+      "webhookId": "e6651ab6-5905-48a5-ae3c-dbda67edd830",
       "credentials": {
         "telegramApi": {
-          "id": "telegram-account-id",
-          "name": "Telegram Account"
+          "id": "qnm6xhn2yyw5PPr6",
+          "name": "Telegram account"
         }
       }
     },
@@ -522,10 +521,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        400,
-        48
+        192,
+        -80
       ],
-      "id": "88888888-8888-8888-8888-888888888888",
+      "id": "e64999a4-2bbb-400f-935a-c796e20b1d79",
       "name": "IfTelegramSuccess"
     },
     {
@@ -537,15 +536,16 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        100,
-        -128
+        -256,
+        -512
       ],
-      "id": "66666666-6666-6666-6666-666666666666",
+      "id": "970274a8-75fd-421c-82ff-c9e1b2c0a9f5",
       "name": "Telegram Error",
+      "webhookId": "245c656a-1344-4ffc-bc15-3165ec064f80",
       "credentials": {
         "telegramApi": {
-          "id": "telegram-account-id",
-          "name": "Telegram Account"
+          "id": "qnm6xhn2yyw5PPr6",
+          "name": "Telegram account"
         }
       }
     },
@@ -577,10 +577,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -112,
-        -240
+        -480,
+        -512
       ],
-      "id": "99999999-9999-9999-9999-999999999999",
+      "id": "3834eeba-1c68-4c3d-be95-6957c0f38fd4",
       "name": "IfTelegramError"
     },
     {
@@ -606,15 +606,15 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        -736,
-        32
+        -1152,
+        -224
       ],
-      "id": "9c0749c0-1396-43d9-9d95-1f1bd4b927bf",
+      "id": "0b15e0cd-b35b-4ef8-a829-e14c75d45c8b",
       "name": "CheckCitaDuplicada",
       "alwaysOutputData": true,
       "credentials": {
         "airtableTokenApi": {
-          "id": "FY5BRRFANF1cAZNo",
+          "id": "9dAQu5FCFGIroaM2",
           "name": "Airtable Personal Access Token account"
         }
       }
@@ -626,10 +626,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        288,
-        48
+        -32,
+        -80
       ],
-      "id": "7e7d41f8-12f9-418d-b1a8-da995ff4705b",
+      "id": "c903ad00-8a9d-4dd3-a7cb-fbfd9f28a285",
       "name": "Formatear Respuesta Final"
     },
     {
@@ -639,10 +639,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1696,
-        192
+        -2624,
+        -176
       ],
-      "id": "383e70de-bdb8-4e24-9594-6fa71a1d613e",
+      "id": "a68417fb-41f8-4f5f-b3ba-7dad98128a49",
       "name": "NormalizarHora"
     },
     {
@@ -658,15 +658,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -2608,
-        400
+        -3312,
+        144
       ],
-      "id": "2d0a635f-32d7-4903-a3ca-06dd5d3fded0",
+      "id": "24fbe1c7-1720-4ecd-bad8-01a92faa65da",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "e9kOC2wdC2eXBdqQ",
-          "name": "OpenAi account"
+          "id": "HqqlP7V9zajs3X15",
+          "name": "OpenAI-Senpai"
         }
       }
     },
@@ -677,10 +677,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1984,
-        192
+        -2848,
+        -80
       ],
-      "id": "e2f5ba02-1f5f-4bbc-bbd3-4d44a96aeb6e",
+      "id": "102b1a8e-0458-45ae-9767-3dc4c06164be",
       "name": "Parse"
     },
     {
@@ -692,15 +692,16 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1696,
-        400
+        -2400,
+        16
       ],
-      "id": "22222222-2222-2222-2222-222222222222",
+      "id": "0b409d3c-84a6-4740-9f3a-c0d606aa8c8f",
       "name": "Telegram Response",
+      "webhookId": "46e5eb05-ff7f-4e76-a27e-29c0fb435f04",
       "credentials": {
         "telegramApi": {
-          "id": "telegram-account-id",
-          "name": "Telegram Account"
+          "id": "qnm6xhn2yyw5PPr6",
+          "name": "Telegram account"
         }
       }
     },
@@ -732,10 +733,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1840,
-        400
+        -2624,
+        16
       ],
-      "id": "77777777-7777-7777-7777-777777777777",
+      "id": "217f301d-3cb9-4ac9-9af1-fdbfe99a2b28",
       "name": "IfTelegramResponse"
     },
     {
@@ -748,10 +749,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
       "position": [
-        -2512,
-        192
+        -3248,
+        -80
       ],
-      "id": "53bec5b9-6d19-449f-a151-9bf65db8a7eb",
+      "id": "29e5c02c-f55e-4e92-8dbc-0f955ab245d3",
       "name": "AI Agent"
     },
     {
@@ -782,10 +783,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -512,
-        32
+        -928,
+        -224
       ],
-      "id": "cbf0e4ad-6490-4dc5-b5ab-9afaba24f262",
+      "id": "6bb0d86b-321c-4a55-81d7-b1d095867de4",
       "name": "IfDuplicada",
       "alwaysOutputData": false
     },
@@ -796,10 +797,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -320,
-        -128
+        -704,
+        -320
       ],
-      "id": "0e04e89a-aceb-42c8-a78e-3839be163b3d",
+      "id": "fc3a31a4-2b88-4bce-be41-055dffb74353",
       "name": "RespuestaDuplicada"
     },
     {
@@ -815,10 +816,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.3,
       "position": [
-        -688,
-        352
+        -1728,
+        80
       ],
-      "id": "0fdd3ea7-6bb9-4bb9-8b68-970af6b6e233",
+      "id": "1b2e98e5-c248-454e-8755-ba659141b99c",
       "name": "NormativasPaquetes",
       "disabled": true
     },
@@ -851,10 +852,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -992,
-        48
+        -1952,
+        -320
       ],
-      "id": "a386498c-1683-4b07-b9c6-23f13c17dd0b",
+      "id": "0c852841-0b7c-4557-b328-4ba4f851c2c4",
       "name": "IfDatosCompletos"
     },
     {
@@ -864,10 +865,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -720,
-        208
+        -704,
+        -560
       ],
-      "id": "58a3a62f-a684-4050-bace-b082a2eca20c",
+      "id": "d7af538b-e06f-46af-a2a4-f705ce4b8230",
       "name": "FormatearRespuesta"
     },
     {
@@ -894,14 +895,14 @@
       "type": "n8n-nodes-base.airtableTool",
       "typeVersion": 2.1,
       "position": [
-        -2304,
-        400
+        -3056,
+        144
       ],
-      "id": "f526fad9-6d38-4565-9f7f-b8228a122ef6",
+      "id": "a77fb4a5-ed14-487f-b850-2b92d374c30c",
       "name": "FindOptions",
       "credentials": {
         "airtableTokenApi": {
-          "id": "FY5BRRFANF1cAZNo",
+          "id": "9dAQu5FCFGIroaM2",
           "name": "Airtable Personal Access Token account"
         }
       }
@@ -911,10 +912,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -2464,
-        400
+        -3184,
+        144
       ],
-      "id": "f62432b7-3354-4237-8d2d-b92f3e1d4ac4",
+      "id": "00f558bb-7651-44a6-bd5a-41e3107df12e",
       "name": "Simple Memory"
     },
     {
@@ -1135,14 +1136,14 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        -112,
-        -128
+        -480,
+        -272
       ],
-      "id": "3435fb45-6f16-4a0b-bad9-b85ce527ad59",
+      "id": "4ca1f39d-5792-4698-970a-3578dc30a311",
       "name": "UpdateCitas",
       "credentials": {
         "airtableTokenApi": {
-          "id": "FY5BRRFANF1cAZNo",
+          "id": "9dAQu5FCFGIroaM2",
           "name": "Airtable Personal Access Token account"
         }
       }
@@ -1503,12 +1504,15 @@
   },
   "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "75c0c0c9-6933-4d31-8df1-91b2fde267c5",
+  "versionId": "7051e366-2c9d-4cea-8b19-badc51124a44",
   "meta": {
-    "instanceId": "2d9dae60ee2f9aea7e148adecf288670e19fddb51a6b563013c0bca3ff3be78f"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "783faf212da036938df4e4ec8a10eb97cb6d414fc606b87d6c4259a466b8bbfe"
   },
-  "id": "sFBSkSqCXO7u18VA",
+  "id": "IJaEz855sAZI9evt",
   "tags": []
 }
