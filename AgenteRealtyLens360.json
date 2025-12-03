@@ -540,9 +540,8 @@
               "leftValue": "={{ $items(\"CheckCitaDuplicada\").length }}",
               "rightValue": 0,
               "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
+                "type": "number",
+                "operation": "gt"
               }
             }
           ],
@@ -708,7 +707,7 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "id_cita": "={{ $json.id_cita }}",
+            "id_cita": "={{ $json.airtableId }}",
             "Telefono": "={{ $json.Telefono }}",
             "Correo": "={{ $json.Correo }}",
             "Fecha": "={{ $json.Fecha }}",
@@ -1178,7 +1177,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "75c0c0c9-6933-4d31-8df1-91b2fde267c5",
+  "versionId": "4f9089e3-f415-4919-b95f-845145fdd8e0",
   "meta": {
     "instanceId": "2d9dae60ee2f9aea7e148adecf288670e19fddb51a6b563013c0bca3ff3be78f"
   },
